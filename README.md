@@ -2,6 +2,12 @@
 
 This is currently work in progress
 
+### TODO
+* results processing
+* refactoring into different files/modules
+* error handling
+
+
 ### Assumptions
 * The service-under-test is http2 enabled and can accept HTTP2 over HTTP i.e. _without_ TLS  
   * HTTP/2 without TLS is uncommon but possible and is used for the scope of this exercise
@@ -9,6 +15,9 @@ This is currently work in progress
   * As such, this load generator does not simulate concurrent, but different users.
 * When measuring performance (duration of requests), the _end_ is after the full response body has been streamed.
   * The reason for this decision is because we don't want to prematurely declare a service-under-test as fast when streaming may not be.
+### Assumptions about the load generator
+* RPS is >= total
+  * Reason is if rate is 10 RPS and total is 2 requests; we just spawn tasks with nothing to do. Though cheap, we side-step this edgecase.
 
 ### How to set up a local HTTP/2 enabled service.
 #### HTTP/2 target service
