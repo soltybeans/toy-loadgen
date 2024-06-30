@@ -3,7 +3,6 @@
 This is currently work in progress
 
 ### TODO
-* results processing
 * refactoring into different files/modules
 * error handling
 
@@ -14,10 +13,9 @@ This is currently work in progress
 * One TCP Connection can be re-used for multiple requests to the same `host` and `port`. 
   * As such, this load generator does not simulate concurrent, but different users.
 * When measuring performance (duration of requests), the _end_ is after the full response body has been streamed.
-  * The reason for this decision is because we don't want to prematurely declare a service-under-test as fast when streaming may not be.
-### Assumptions about the load generator
-* RPS is >= total
-  * Reason is if rate is 10 RPS and total is 2 requests; we just spawn tasks with nothing to do. Though cheap, we side-step this edgecase.
+  * The reason for this decision is that we don't want to prematurely declare a service-under-test as fast when streaming may not be.
+* Using an [Unbounded mpsc](https://docs.rs/tokio/latest/tokio/sync/mpsc/index.html) is acceptable because the total calls is known.
+* An error is anything with the status_code in the 5XX error range. 
 
 ### How to set up a local HTTP/2 enabled service.
 #### HTTP/2 target service
