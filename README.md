@@ -11,7 +11,7 @@ This is currently work in progress
 ### Assumptions
 * The service-under-test is http2 enabled and can accept HTTP2 over HTTP i.e. _without_ TLS  
   * HTTP/2 without TLS is uncommon but possible and is used for the scope of this exercise
-* One TCP Connection can be re-used for multiple requests to the same `host` and `post`. 
+* One TCP Connection can be re-used for multiple requests to the same `host` and `port`. 
   * As such, this load generator does not simulate concurrent, but different users.
 * When measuring performance (duration of requests), the _end_ is after the full response body has been streamed.
   * The reason for this decision is because we don't want to prematurely declare a service-under-test as fast when streaming may not be.
