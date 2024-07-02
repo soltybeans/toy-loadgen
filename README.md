@@ -25,7 +25,7 @@ The load-generator is of interest but while developing the load generator, it is
   ```bash
   ### Install the working service directly in a local `kind` cluster:
   kind create cluster
-  kubectl create ns test --dry-run 
+  kubectl create ns test --dry-run=client
   helm install podinfo-h2c-enabled -n test --set h2c.enabled=true podinfo/podinfo
   kubectl -n test port-forward deploy/podinfo-h2c-enabled 8080:9898
   ```
