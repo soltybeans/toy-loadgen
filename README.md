@@ -24,7 +24,7 @@ The load-generator is of interest but while developing the load generator, it is
 * `podinfo` is a very useful Golang scaffold service with various bells and whistles that can run in a Docker/Kubernetes runtime. It supports the `h2c` setting (which means HTTP2 without TLS) and is used as a test service for this exercise. Minimal setup:
   ```bash
   ### Install the working service directly in a local `kind` cluster:
-  kubectl create cluster
+  kind create cluster
   kubectl create ns test --dry-run 
   helm install podinfo-h2c-enabled -n test --set h2c.enabled=true podinfo/podinfo
   kubectl -n test port-forward deploy/podinfo-h2c-enabled 8080:9898
