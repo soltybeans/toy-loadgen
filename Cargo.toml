@@ -13,3 +13,5 @@ hyper-util = { version = "0.1.5", features = ["full"] }
 tokio = { version = "1", features = ["full"] }
 http-body-util = "0.1.2"
 time = "0.3.36"
+futures-util = "0.3.30"
+clippy = "0.0.302"
