@@ -38,7 +38,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     // CLI check
     let args = TestParams::parse();
-    println!("Rate is {}ps", args.rate);
+    println!("Rate is {} rps", args.rate);
     println!("Total is {}", args.total);
 
     // Validation
