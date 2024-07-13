@@ -83,10 +83,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     // in their respective channels until _after_ the total calls have been made. Our load generator
     // also has a flaw in that it will hang indefinitely if no requests can be made. This can be addressed by wrapping
     // the result collection in a tokio timeout itself.
-    while !rx_status_codes.is_empty() {
+    // We use try_recv to know when an Empty error occurs as a signal for no more results (even if they are delayed).
+    while !rx_status_codes.try_recv().is_err() {
         result_errors.push(rx_status_codes.recv().await.unwrap());
     }
-    while !rx_durations.is_empty() {
+    while !rx_durations.try_recv().is_err() {
         result_durations.push(rx_durations.recv().await.unwrap());
     }
 
