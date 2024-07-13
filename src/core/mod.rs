@@ -27,14 +27,16 @@ pub async fn sustain_call_rate(
         let tx_duration = tx_result_duration_micros.clone();
         tokio::spawn(async move {
             // Make sure we're within `total` limit - strong consistency needed here hence Mutex
-            let mut job_number = calls.lock().await;
-            if *job_number > 0 {
-                *job_number -= 1;
-            } else {
-                if (tx_end_check.send(()).await).is_ok() {
-                    println!("Total call limit reached...");
+            {
+                let mut job_number = calls.lock().await;
+                if *job_number > 0 {
+                    *job_number -= 1;
+                } else {
+                    if (tx_end_check.send(()).await).is_ok() {
+                        println!("Total call limit reached...");
+                    }
+                    return;
                 }
-                return;
             }
 
             let request: Request<Full<Bytes>> = Request::builder()
