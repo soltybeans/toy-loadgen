@@ -77,17 +77,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     while rx.is_empty() {
         sustain_call_rate(rate, &address, client.clone(), &total_calls, tx.clone(), tx_result_status_codes.clone(), tx_result_duration_micros.clone(), &mut time_interval).await.unwrap();
     }
-
     // Result processing
     // This can be optimized further, we're doing full buffering of all the response codes and durations
     // in their respective channels until _after_ the total calls have been made. Our load generator
     // also has a flaw in that it will hang indefinitely if no requests can be made. This can be addressed by wrapping
     // the result collection in a tokio timeout itself.
     // We use try_recv to know when an Empty error occurs as a signal for no more results (even if they are delayed).
-    while !rx_status_codes.try_recv().is_err() {
+    while  result_errors.len() != args.total as usize {
         result_errors.push(rx_status_codes.recv().await.unwrap());
     }
-    while !rx_durations.try_recv().is_err() {
+
+    while result_durations.len() != args.total as usize {
         result_durations.push(rx_durations.recv().await.unwrap());
     }
 

@@ -52,10 +52,10 @@ pub async fn sustain_call_rate(
             // Data itself is not as important how long it takes to be fully streamed back to us.
             // We need all the data to stop timing.
             let _data = body.collect().await.unwrap();
-            let elapsed_time_micros = start_time.elapsed().as_millis();
+            let elapsed_time_millis = start_time.elapsed().as_millis();
 
             tx_status.send(parts.status.as_u16()).expect("cannot send status_code!");
-            tx_duration.send(elapsed_time_micros).expect("cannot send duration!");
+            tx_duration.send(elapsed_time_millis).expect("cannot send duration!");
         });
     }
 
