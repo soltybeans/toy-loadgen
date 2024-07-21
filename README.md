@@ -97,3 +97,16 @@ The load-generator is of interest but while developing the load generator, it is
   * That means an HTTP/2 stream is _still_ open with data transfer (potentially) occurring.
 * I am not sure if it's possible to hook a tracing library to such events to expose.
 * Theoretically, one could also take the _average_ response time (so not p50) and multiply by the rate but not sure if that's acceptable :) Curious to hear other ideas.
+
+### Problems issues with approach
+* This approach is doing a very bursty and literal attempt at N requests per second as provided by the CLI instead of bounding smaller requests in a work queue that could be spread over smaller time intervals. 1 RPS is also 2 concurrent per 500ms, for example, which allows for division of work to progress during _their_ tick interval instead of _all_ tasks at a rate of 1 second. TODO: Check for distribution of work e.g. zipf.
+* Co-ordinated omission. Current version is coupling how long a task stays in the task backlog to the measured request duration! Actual duration of upstream requests needs to be separate from time spent "lingering" in a task queue. Imagine the following naive scenario in a single threaded runtime:
+  *  Two tasks. Task One makes a request, calls `Instant.now()` and yields (full response stream not completed). Assume task two, for some reason, has engaged a sleep on the thread(or the upstream service simply starts blackholing all requests). Task One is effectively blocked and lingers in the task backlog. This time is NOT measured...!
+  *  _Eventually_ Task One resumes, and an elapsed time is calculated around the request time. This assumes perceived latency reported is better than the time actually spent getting back to this particular request! 
+
+### Changes to design to do:
+* Divide call rate into some meaningfully bounded chunks of work to be placed in the queue.
+* Set deadlines for individual tasks. If they've stayed in the work queue longer than when they should have issued their request against the service (to make up the N RPS) ; consider that to be a "missed iteration".
+* This means there needs to be issuance of work via a queue-ing system to control the concurrency. In a 0ms delay service, the rate should be 100% of calls made and N requests per second.
+* Measure time spent in queue separately from how long the service request took. This can be simulated with a successful request followed by a slow request.
+* Make result processing better. Spawn a background task to eagerly capture results. In intervals, numbers can be crunched for reporting purposes.
